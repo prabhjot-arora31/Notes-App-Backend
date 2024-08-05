@@ -116,7 +116,7 @@ app.post("/login", async (req, res) => {
       req.session.email = email;
       res.cookie("user-cookie", user._id,{
         maxAge: 3600000, // 1 hour
-        httpOnly: true, // JavaScript cannot access this cookie
+        httpOnly: false, // JavaScript cannot access this cookie
         secure: true, // Set to true if using HTTPS
         sameSite: 'None', // Allow cross-origin cookies
         domain:'https://notes-app-3112.vercel.app'
