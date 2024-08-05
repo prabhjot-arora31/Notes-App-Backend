@@ -113,7 +113,7 @@ app.post("/login", async (req, res) => {
       req.session.email = email;
       res.cookie("user-cookie", user._id, {
         maxAge: 3600000,
-        httpOnly: true,
+        httpOnly: false,
         secure: true,
         sameSite: 'None',
       });
