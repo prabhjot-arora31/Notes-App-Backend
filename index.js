@@ -25,7 +25,7 @@ app.use(cookieParser()); // Uncomment if using cookies
 //   }));
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
+   // origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
    // credentials: true,
   })
 );
@@ -36,8 +36,8 @@ app.use(
     saveUninitialized: false,
     secret: process.env.express_session,
    cookie: {
-      secure: true, // Set to true in production if using HTTPS
-      sameSite: 'None', // Allow cross-origin cookies
+     // secure: true, // Set to true in production if using HTTPS
+     /// sameSite: 'None', // Allow cross-origin cookies
     }, // Set to true if using HTTPS
   })
 );
