@@ -36,7 +36,7 @@ app.use(
     saveUninitialized: false,
     secret: process.env.express_session,
    cookie: {
-      secure: false, // Set to true in production if using HTTPS
+      secure: true, // Set to true in production if using HTTPS
       sameSite: 'None', // Allow cross-origin cookies
     }, // Set to true if using HTTPS
   })
@@ -119,6 +119,7 @@ app.post("/login", async (req, res) => {
         httpOnly: true, // JavaScript cannot access this cookie
         secure: true, // Set to true if using HTTPS
         sameSite: 'None', // Allow cross-origin cookies
+        domain:'https://notes-app-3112.vercel.app'
       });
       res.json({ msg: "Login success", user: user._id });
     } else {
