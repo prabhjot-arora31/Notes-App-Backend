@@ -35,7 +35,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     secret: process.env.express_session,
-    cookie: { secure: false }, // Set to true if using HTTPS
+   cookie: {
+      secure: false, // Set to true in production if using HTTPS
+      sameSite: 'None', // Allow cross-origin cookies
+    }, // Set to true if using HTTPS
   })
 );
 app.use(flash());
@@ -111,11 +114,11 @@ app.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       req.session.email = email;
-      res.cookie("user-cookie", user._id, {
-        maxAge: 3600000,
-        httpOnly: false,
-        secure: true,
-        sameSite: 'None',
+      res.cookie("user-cookie", user._id,{
+        maxAge: 3600000, // 1 hour
+        httpOnly: true, // JavaScript cannot access this cookie
+        secure: true, // Set to true if using HTTPS
+        sameSite: 'None', // Allow cross-origin cookies
       });
       res.json({ msg: "Login success", user: user._id });
     } else {
