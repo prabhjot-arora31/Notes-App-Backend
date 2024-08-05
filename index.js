@@ -111,7 +111,12 @@ app.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       req.session.email = email;
-      res.cookie("user-cookie", user._id, { maxAge: 3600000 });
+      res.cookie("user-cookie", user._id, {
+        maxAge: 3600000,
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+      });
       res.json({ msg: "Login success", user: user._id });
     } else {
       res.json({ msg: `Password doesn't match` });
