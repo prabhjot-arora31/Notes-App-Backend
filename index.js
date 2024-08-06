@@ -26,7 +26,7 @@ app.use(cookieParser()); // Uncomment if using cookies
 app.use(
   cors({
    // origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
-   // credentials: true,
+   credentials: true,
   })
 );
 app.use(morgan("combined"));
