@@ -119,7 +119,7 @@ app.post("/login", async (req, res) => {
          httpOnly: false, // JavaScript can access this cookie
        secure: true, // Set to true if using HTTPS
          sameSite: 'None', // Allow cross-origin cookies
-         domain:'notes-app-3112.vercel.app'
+         domain:'.notes-app-3112.vercel.app'
       });
       res.json({ msg: "Login success", user: user._id });
     } else {
