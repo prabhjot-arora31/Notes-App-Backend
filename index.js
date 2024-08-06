@@ -15,14 +15,14 @@ const expressSession = require("express-session");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // Uncomment if using cookies
-// app.use(express.session({
-//     cookie: {
-//       path    : '/',
-//       httpOnly: false,
-//       maxAge  : 24*60*60*1000
-//     },
-//     secret: '1234567890QWERT'
-//   }));
+app.use(express.session({
+     cookie: {
+      path    : '/',
+    httpOnly: false,
+     maxAge  : 24*60*60*1000
+    },
+    secret: '1234567890QWERT'
+  }));
 app.use(
   cors({
    origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
@@ -36,8 +36,8 @@ app.use(
     saveUninitialized: false,
     secret: process.env.express_session,
    cookie: {
-     // secure: true, // Set to true in production if using HTTPS
-     /// sameSite: 'None', // Allow cross-origin cookies
+     secure: true, // Set to true in production if using HTTPS
+     sameSite: 'None', // Allow cross-origin cookies
     }, // Set to true if using HTTPS
   })
 );
