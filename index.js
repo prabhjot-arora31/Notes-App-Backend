@@ -10,23 +10,23 @@ const bcrypt = require("bcrypt");
 const User = require("./models/UserModel.js");
 const flash = require("connect-flash");
 const expressSession = require("express-session");
-
+const jwt = require("jsonwebtoken");
 // Middleware setup
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // Uncomment if using cookies
 //app.use(express.session({
-     //cookie: {
-    //  path    : '/',
- //   httpOnly: false,
- //    maxAge  : 24*60*60*1000
-  //  },
-    //secret: '1234567890QWERT'
+//cookie: {
+//  path    : '/',
+//   httpOnly: false,
+//    maxAge  : 24*60*60*1000
+//  },
+//secret: '1234567890QWERT'
 //  }));
 app.use(
   cors({
-   origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
-   credentials: true,
+    origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
+    credentials: true,
   })
 );
 app.use(morgan("combined"));
@@ -35,15 +35,49 @@ app.use(
     resave: false,
     saveUninitialized: false,
     secret: process.env.express_session,
-   cookie: {
-    secure: true, // Set to true in production if using HTTPS
-     sameSite: 'None', // Allow cross-origin cookies
+    cookie: {
+      secure: true, // Set to true in production if using HTTPS
+      sameSite: "None", // Allow cross-origin cookies
     }, // Set to true if using HTTPS
   })
 );
 app.use(flash());
 
 // Routes
+
+app.post(
+  "/login/forjwt",
+
+  (req, res) => {
+    const jwtsecret = "hsvcjlskldnm&*^&bndbcn175784bnbhGFHJFMbnsjk";
+    const authenticatedUser = {
+      _id: "6u3gbnbsgjkfhewlkfh",
+      name: "PRABHJOT",
+      email: "p@g.co",
+    };
+    const token = jwt.sign({ authenticatedUser }, jwtsecret);
+    res.json(token);
+  }
+);
+
+app.get(
+  "/profile",
+  (req, res, next) => {
+    const authorization = req.headers["authorization"];
+    // console.log(authorization);
+    const token = authorization.split(" ")[1];
+    const jwtsecret = "hsvcjlskldnm&*^&bndbcn175784bnbhGFHJFMbnsjk";
+    jwt.verify(token, jwtsecret, (err, data) => {
+      if (err) return res.send("Token invalid");
+      res.send(data);
+    });
+    next();
+  },
+  (req, res) => {
+    // res.send("done");
+  }
+);
+
 app.get("/", (req, res) => {
   res.send("hey ya");
 });
@@ -51,6 +85,7 @@ app.get("/", (req, res) => {
 app.post("/view-note/:noteId", async (req, res) => {
   const noteId = req.params.noteId;
   const usersId = req.body.id;
+  console.log("note id:", req.params.noteId);
   try {
     const note = await Notes.findOne({ _id: noteId });
     if (note) {
@@ -106,6 +141,16 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/verify-user", (req, res) => {
+  console.log(req.headers["authorization"]);
+  const token = req.headers["authorization"].split(" ")[1];
+  const secret = process.env.jwt_secret;
+  jwt.verify(token, secret, (err, auth) => {
+    if (err) return res.send({ msg: "Failure" });
+    res.json({ msg: "Success", _id: auth.user._id });
+  });
+});
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -114,14 +159,15 @@ app.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       req.session.email = email;
-      res.cookie("user-cookie", user._id,{
-         maxAge: 3600000, // 1 hour
-         httpOnly: false, // JavaScript can access this cookie
-       secure: true, // Set to true if using HTTPS
-         sameSite: 'None', // Allow cross-origin cookies
-        
-      });
-      res.json({ msg: "Login success", user: user._id });
+      const secret = process.env.jwt_secret;
+      const token = jwt.sign({ user }, secret);
+      // res.cookie("user-cookie", user._id, {
+      //   maxAge: 3600000, // 1 hour
+      //   httpOnly: false, // JavaScript can access this cookie
+      //   secure: true, // Set to true if using HTTPS
+      //   sameSite: "None", // Allow cross-origin cookies
+      // });
+      res.json({ msg: "Login success", token });
     } else {
       res.json({ msg: `Password doesn't match` });
     }
@@ -153,6 +199,7 @@ app.post("/create-note/:id", async (req, res) => {
 
 app.get("/home/:id", async (req, res) => {
   const id = req.params.id;
+  console.log("ID IS:", id);
   console.log("inside home:", id, " and type of is is:", typeof id);
   try {
     const user = await User.findOne({ _id: id });
@@ -161,10 +208,10 @@ app.get("/home/:id", async (req, res) => {
     console.log("notes:", notes);
     console.log("user._id is:", user._id, " and its type is:", typeof user._id);
     console.log("notes.userId:", notes.userId);
-    if (user && notes) {
+    if (user) {
       const { name, email } = user;
       res.json({ id: id, name: name, email: email, notes: notes });
-    } else res.send("Please login to continue");
+    } else res.send("User not found");
   } catch (err) {
     console.log(err.message);
     res.send(`Error is in home route:${err.message}`);
