@@ -27,6 +27,7 @@ app.use(
   cors({
     origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(morgan("combined"));
