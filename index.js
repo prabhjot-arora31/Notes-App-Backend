@@ -134,10 +134,16 @@ app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ name, email, password: hashedPassword });
+    const isExists = await User.findOne({email})
+    if(isExists){
+      res.json({msg:'User already exists!'})
+    }else{
+    const user = new User({ name, email, password: hashedPassword });
+    await user.save()
     req.flash("User", email); // Store email in flash
     res.json({ msg: "User created", email: req.flash("User") });
-  } catch (err) {
+  }
+  }catch (err) {
     res.status(500).send("Error in registering user: " + err.message);
   }
 });
