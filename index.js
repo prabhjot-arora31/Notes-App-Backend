@@ -25,7 +25,11 @@ app.use(cookieParser()); // Uncomment if using cookies
 //  }));
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://notes-app-3112.vercel.app" , 'https://prabhjot-arora31.github.io'],
+    origin: [
+      "http://localhost:5173",
+      "https://notes-app-3112.vercel.app",
+      "https://prabhjot-arora31.github.io",
+    ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -132,21 +136,22 @@ app.post("/update-note/:id", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   try {
-    var { name, email, password } = req.body;
-    name = name.trim()
-    email = email.trim()
-    password = password.trim()
+    var { name, email, password, phone } = req.body;
+    phone = phone.trim();
+    name = name.trim();
+    email = email.trim();
+    password = password.trim();
     const hashedPassword = await bcrypt.hash(password, 10);
-    const isExists = await User.findOne({email})
-    if(isExists){
-      res.json({msg:'User already exists!'})
-    }else{
-    const user = new User({ name, email, password: hashedPassword });
-    await user.save()
-    req.flash("User", email); // Store email in flash
-    res.json({ msg: "User created", email: req.flash("User") });
-  }
-  }catch (err) {
+    const isExists = await User.findOne({ email });
+    if (isExists) {
+      res.json({ msg: "User already exists!" });
+    } else {
+      const user = new User({ name, email, password: hashedPassword, phone });
+      await user.save();
+      req.flash("User", email); // Store email in flash
+      res.json({ msg: "User created", email: req.flash("User") });
+    }
+  } catch (err) {
     res.status(500).send("Error in registering user: " + err.message);
   }
 });
@@ -219,8 +224,14 @@ app.get("/home/:id", async (req, res) => {
     console.log("user._id is:", user._id, " and its type is:", typeof user._id);
     console.log("notes.userId:", notes.userId);
     if (user) {
-      const { name, email } = user;
-      res.json({ id: id, name: name, email: email, notes: notes });
+      const { name, email, phone } = user;
+      res.json({
+        id: id,
+        name: name,
+        email: email,
+        phone: phone,
+        notes: notes,
+      });
     } else res.send("User not found");
   } catch (err) {
     console.log(err.message);
@@ -235,7 +246,7 @@ app.post("/profile-update/:id", async (req, res) => {
   try {
     const user = await User.findOneAndUpdate(
       { _id: id },
-      { name, email },
+      { name, email, phone },
       { new: true }
     );
     res.json({ msg: "Success", data: user });
