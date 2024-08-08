@@ -132,7 +132,10 @@ app.post("/update-note/:id", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    var { name, email, password } = req.body;
+    name = name.trim()
+    email = email.trim()
+    password = password.trim()
     const hashedPassword = await bcrypt.hash(password, 10);
     const isExists = await User.findOne({email})
     if(isExists){
