@@ -30,7 +30,7 @@ app.use(
       "https://notes-app-3112.vercel.app",
       "https://prabhjot-arora31.github.io",
       "http://localhost:5174",
-      'https://notes-9931.netlify.app'
+      "https://notes-9931.netlify.app",
     ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -87,6 +87,27 @@ app.get(
 
 app.get("/", (req, res) => {
   res.send("hey ya");
+});
+
+app.post("/update-password", async (req, res) => {
+  const { old, newPass, id } = req.body;
+  console.log(req.body);
+  try {
+    const user = await User.findOne({ _id: id });
+    if (!user) return res.json({ msg: `User doesn't exist` });
+    const result = await bcrypt.compare(old, user.password);
+    console.log("res is:", result);
+    if (result == false) {
+      res.json({ msg: "Old password is incorrect." });
+    } else {
+      const hashedPassword = await bcrypt.hash(newPass, 10);
+      user.password = hashedPassword;
+      user.save();
+      res.json({ msg: "Success" });
+    }
+  } catch (err) {
+    res.send(err.message);
+  }
 });
 
 app.post("/view-note/:noteId", async (req, res) => {
