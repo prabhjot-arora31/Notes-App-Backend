@@ -112,7 +112,7 @@ app.post("/update-password", async (req, res) => {
 
 app.post("/view-note/:noteId", async (req, res) => {
   const noteId = req.params.noteId;
-  const usersId = req.body.id;
+  const usersId = req.body.id || "";
   console.log("note id:", req.params.noteId);
   try {
     const note = await Notes.findOne({ _id: noteId });
@@ -128,11 +128,13 @@ app.post("/view-note/:noteId", async (req, res) => {
           res.json({ msg: "Success 2", data: note });
         } else {
           res.json({
-            msg: "Failure",
+            msg: "Failure , no note",
             desc: "Sorry, this note is not shareable.",
           });
         }
       }
+    } else {
+      res.json({ msg: "Failure", desc: "No note found." });
     }
   } catch (err) {
     console.log(err.message);
