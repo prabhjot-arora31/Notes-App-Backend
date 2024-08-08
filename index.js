@@ -128,13 +128,13 @@ app.post("/view-note/:noteId", async (req, res) => {
           res.json({ msg: "Success 2", data: note });
         } else {
           res.json({
-            msg: "Failure , no note",
+            msg: "Failure",
             desc: "Sorry, this note is not shareable.",
           });
         }
       }
     } else {
-      res.json({ msg: "Failure", desc: "No note found." });
+      res.json({ msg: "Failure, no note", desc: "No note found." });
     }
   } catch (err) {
     console.log(err.message);
