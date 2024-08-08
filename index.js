@@ -29,6 +29,7 @@ app.use(
       "http://localhost:5173",
       "https://notes-app-3112.vercel.app",
       "https://prabhjot-arora31.github.io",
+      "http://localhost:5174"
     ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
