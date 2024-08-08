@@ -134,7 +134,8 @@ app.post("/view-note/:noteId", async (req, res) => {
         }
       }
     } else {
-      res.json({ msg: "Failure, no note", desc: "No note found." });
+      res.redirect('https://notes-9931.netlify.app');
+     // res.json({ msg: "Failure, no note", desc: "No note found." });
     }
   } catch (err) {
     console.log(err.message);
