@@ -162,8 +162,8 @@ app.post("/update-note/:id", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   try {
-    var { name, email, password, phone } = req.body;
-    phone = phone.trim();
+    var { name, email, password } = req.body;
+   // phone = phone.trim();
     name = name.trim();
     email = email.trim();
     password = password.trim();
@@ -172,7 +172,7 @@ app.post("/register", async (req, res) => {
     if (isExists) {
       res.json({ msg: "User already exists!" });
     } else {
-      const user = new User({ name, email, password: hashedPassword, phone });
+      const user = new User({ name, email, password: hashedPassword});
       await user.save();
       req.flash("User", email); // Store email in flash
       res.json({ msg: "User created", email: req.flash("User") });
